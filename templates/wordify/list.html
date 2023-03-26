@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="site-section pt-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {% if cat %}
+                <h2 class="mb-4">Category: {{ cat }}</h2>
+                {% elif title %}
+                <h2 class="mb-4">Title contains: {{ title }}</h2>
+                {% elif tag %}
+                <h2 class="mb-4">Tag: {{ tag }}</h2>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row blog-entries">
+            <div class="col-md-12 col-lg-8 main-content">
+                <div class="row mb-5 mt-5">
+                    <div class="col-md-12">
+                        {% for object in object_list %}
+                        <div class="post-entry-horzontal">
+                            <a href="{% url 'blog:detail' object.slug %}">
+                                <div class="image element-animate" data-animate-effect="fadeIn"
+                                     style="background-image: url({{ object.image.url }});"></div>
+                                <span class="text">
+
+                                    <div class="post-meta">
+
+                                        <span class="author mr-2">
+
+                                            {% if object.author.avatar %}
+
+                                            <img src="{{ object.author.avatar.url }}" alt="Colorlib">
+
+                                            {% else %}
+
+                                            <img src="{% static 'images/user.png' %}" alt="Colorlib">
+
+                                            {% endif %}
+
+                                            {{ object.author }}</span>&bullet;
+
+                                        <span class="mr-2">{{ object.created_date|date:'F d, Y' }}</span> &bullet;
+
+                                        <span class="mr-2">{{ object.category }}</span> &bullet;
+
+                                        <span class="ml-2"><span class="fa fa-comments"></span>{{ object.comments.count }}</span>
+
+                                    </div>
+
+                                    <h2>{{ object.title }}</h2>
+
+                                </span>
+                            </a>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+                {% include 'wordify/paginator.html' %}
+            </div>
+
+            <div class="col-md-12 col-lg-4 sidebar">
+                <div class="sidebar-box search-form-wrap">
+                    <form action="{% url 'blog:list' %}" class="search-form">
+                        <div class="form-group">
+                            <span class="icon fa fa-search"></span>
+                            <input type="search" name="search" class="form-control" id="s" placeholder="Type a keyword and hit enter">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="sidebar-box">
+                    <div class="bio text-center">
+                        {% if author.avatar %}
+                        <img src="{{ author.avatar.url }}" alt="Image Placeholder" class="img-fluid">
+                        {% else %}
+                        <img src="{% static 'images/user.png' %}" alt="Image Placeholder" class="img-fluid">
+                        {% endif %}
+                        <div class="bio-body">
+                            <h2>{{ author }}</h2>
+                            {% if author.bio %}
+                            <p>{{ author.bio }}</p>
+                            {% endif %}
+                            <p><a href="{% url 'about:index' %}" class="btn btn-primary btn-sm rounded">Read my bio</a></p>
+                            <p class="social">
+                                <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
+                                <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>
+                                <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>
+                                <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3 class="heading">Popular Posts</h3>
+                    <div class="post-entry-sidebar">
+                        <ul>
+                            {% for object in popular_posts %}
+                            <li>
+                                <a href="{% url 'blog:detail' object.slug %}">
+                                    <img src="{{ object.image.url }}" alt="Image placeholder" class="mr-4">
+                                    <div class="text">
+                                        <h4>{{ object.title }}</h4>
+                                        <div class="post-meta">
+                                            <span class="mr-2">{{ object.created_date|date:'F d, Y' }}</span>
+                                        </div>
+                                        <div class="post-meta">
+                                            <span class="mr-2">{{ object.views }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3 class="heading">Categories</h3>
+                    <ul class="categories">
+                        {% for category in categories %}
+                        <li><a href="{% url 'blog:list' %}?cat={{ category }}">{{ category }}<span>({{ category.articles.count }})</span></a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            {% include 'wordify/sidebar.html' %}
+        </div>
+    </div>
+</section>
+{% endblock %}
